@@ -269,6 +269,13 @@
       margin-bottom: 24px;
     }
 
+    /* Safe area for notched phones */
+    @supports (padding: env(safe-area-inset-top)) {
+      .hero { padding-top: calc(48px + env(safe-area-inset-top)); }
+      .container { padding-left: calc(20px + env(safe-area-inset-left)); padding-right: calc(20px + env(safe-area-inset-right)); }
+      .admin-link { padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
+    }
+
     /* Hide number input spinner */
     input[type="number"]::-webkit-outer-spin-button,
     input[type="number"]::-webkit-inner-spin-button {
