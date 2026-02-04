@@ -596,7 +596,7 @@
       btn.textContent = currentLang === 'en' ? 'Submitting...' : 'Enviando...';
 
       try {
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/employee_favorites`, {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/employee_favorites?on_conflict=employee_id`, {
           method: 'POST',
           headers: restHeaders('resolution=merge-duplicates,return=minimal'),
           body: JSON.stringify(data)
