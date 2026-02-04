@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Favorites Survey</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+      color: #333;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    header h1 {
+      font-size: 2rem;
+      color: #e4002b;
+      margin-bottom: 8px;
+    }
+    .lang-toggle {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .lang-btn {
+      padding: 6px 18px;
+      border: 2px solid #e4002b;
+      background: white;
+      color: #e4002b;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .lang-btn.active {
+      background: #e4002b;
+      color: white;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      padding: 30px;
+      margin-bottom: 20px;
+    }
+    .form-group {
+      margin-bottom: 22px;
+    }
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+      color: #222;
+    }
+    .form-group label .q-number {
+      color: #e4002b;
+      margin-right: 4px;
+    }
+    .form-group input[type="text"],
+    .form-group input[type="number"] {
+      width: 100%;
+      padding: 10px 14px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: #e4002b;
+    }
+    .caffeine-group {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .caffeine-group label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 400;
+      cursor: pointer;
+    }
+    .caffeine-group input[type="radio"] {
+      accent-color: #e4002b;
+      width: 18px;
+      height: 18px;
+    }
+    .submit-btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: #e4002b;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .submit-btn:hover { background: #c40025; }
+    .submit-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .success-msg {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .success-msg h2 { color: #2e7d32; margin-bottom: 10px; }
+    .success-msg p { color: #555; }
+    .admin-link {
+      text-align: center;
+      margin-top: 30px;
+    }
+    .admin-link a {
+      color: #999;
+      font-size: 0.8rem;
+      text-decoration: none;
+    }
+    .admin-link a:hover { color: #666; }
+    .error-msg {
+      color: #e4002b;
+      font-size: 0.85rem;
+      margin-top: 4px;
+      display: none;
+    }
+    .greeting {
+      text-align: center;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #e4002b;
+      margin-bottom: 8px;
+    }
+    .greeting-sub {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1 data-en="My Favorites" data-es="Mis Favoritos">My Favorites</h1>
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('en')">English</button>
+        <button class="lang-btn" onclick="setLang('es')">Espa&ntilde;ol</button>
+      </div>
+    </header>
+
+    <!-- STEP 1: Clock-in number lookup -->
+    <div id="lookupSection">
+      <div class="card">
+        <div class="form-group">
+          <label data-en="Enter your clock-in number" data-es="Ingresa tu n&uacute;mero de empleado">Enter your clock-in number</label>
+          <input type="number" id="clockInNumber" inputmode="numeric" pattern="[0-9]*" placeholder="e.g. 449680" onkeydown="if(event.key==='Enter') lookupEmployee()">
+        </div>
+        <p class="error-msg" id="lookupError"></p>
+      </div>
+      <button class="submit-btn" onclick="lookupEmployee()" data-en="Continue" data-es="Continuar">Continue</button>
+    </div>
+
+    <!-- STEP 2: Survey form (hidden until employee found) -->
+    <form id="surveyForm" style="display:none;">
+      <p class="greeting" id="greeting"></p>
+      <p class="greeting-sub" id="greetingSub"></p>
+
+      <div class="card">
+        <div class="form-group">
+          <label><span class="q-number">1.</span> <span data-en="Favorite candy" data-es="Dulce favorito">Favorite candy</span></label>
+          <input type="text" id="q1_candy">
+        </div>
+        <div class="form-group">
+          <label><span class="q-number">2.</span> <span data-en="Favorite snack" data-es="Botana favorita">Favorite snack</span></label>
+          <input type="text" id="q2_snack">
+        </div>
+        <div class="form-group">
+          <label><span class="q-number">3.</span> <span data-en="Favorite chips" data-es="Papitas preferidas">Favorite chips</span></label>
+          <input type="text" id="q3_chips">
+        </div>
+        <div class="form-group">
+          <label><span class="q-number">4.</span> <span data-en="Favorite drink" data-es="Bebida favorita">Favorite drink</span></label>
+          <input type="text" id="q4_drink">
+        </div>
+        <div class="form-group">
+          <label><span class="q-number">5.</span> <span data-en="Favorite birthday cake flavor" data-es="Sabor de pastel favorito de cumplea&ntilde;os">Favorite birthday cake flavor</span></label>
+          <input type="text" id="q5_cake">
+        </div>
+        <div class="form-group">
+          <label><span class="q-number">6.</span> <span data-en="Favorite dessert" data-es="Postre favorito">Favorite dessert</span></label>
+          <input type="text" id="q6_dessert">
+        </div>
+        <div class="form-group">
+          <label><span class="q-number">7.</span> <span data-en="Favorite fast-food restaurant (not Chick-fil-A)" data-es="Restaurante de comida r&aacute;pida favorito (que no sea Chick-fil-A)">Favorite fast-food restaurant (not Chick-fil-A)</span></label>
+          <input type="text" id="q7_fastfood">
+        </div>
+        <div class="form-group">
+          <label><span class="q-number">8.</span> <span data-en="Favorite restaurant" data-es="Restaurante favorito">Favorite restaurant</span></label>
+          <input type="text" id="q8_restaurant">
+        </div>
+        <div class="form-group">
+          <label><span class="q-number">9.</span> <span data-en="Favorite place to shop" data-es="Lugar favorito para ir de compras">Favorite place to shop</span></label>
+          <input type="text" id="q9_shop">
+        </div>
+        <div class="form-group">
+          <label><span class="q-number">10.</span> <span data-en="Favorite color" data-es="Color favorito">Favorite color</span></label>
+          <input type="text" id="q10_color">
+        </div>
+        <div class="form-group">
+          <label><span class="q-number">11.</span> <span data-en="Favorite Chick-fil-A menu item" data-es="Platillo favorito de Chick-fil-A">Favorite Chick-fil-A menu item</span></label>
+          <input type="text" id="q11_cfa">
+        </div>
+        <div class="form-group">
+          <label><span class="q-number">12.</span> <span data-en="A gift you would like to receive" data-es="Regalo que te gustar&iacute;a recibir">A gift you would like to receive</span></label>
+          <input type="text" id="q12_gift">
+        </div>
+        <div class="form-group">
+          <label><span class="q-number">13.</span> <span data-en="Favorite coffee or energy drink" data-es="Caf&eacute; o bebida energ&eacute;tica favorita">Favorite coffee or energy drink</span></label>
+          <input type="text" id="q13_coffee">
+        </div>
+        <div class="form-group">
+          <label><span class="q-number">14.</span> <span data-en="Favorite type of pizza" data-es="Tipo de pizza favorito">Favorite type of pizza</span></label>
+          <input type="text" id="q14_pizza">
+        </div>
+        <div class="form-group">
+          <label><span class="q-number">15.</span> <span data-en="Favorite scent" data-es="Olor favorito">Favorite scent</span></label>
+          <input type="text" id="q15_scent">
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="form-group">
+          <label data-en="Do you have any food allergies?" data-es="&iquest;Tienes alergia a alg&uacute;n alimento?">Do you have any food allergies?</label>
+          <input type="text" id="q_allergies">
+        </div>
+        <div class="form-group">
+          <label data-en="Caffeine preference" data-es="&iquest;Tomas cafe&iacute;na?">Caffeine preference</label>
+          <div class="caffeine-group">
+            <label><input type="radio" name="caffeine" value="Yes"> <span data-en="Yes" data-es="S&iacute;">Yes</span></label>
+            <label><input type="radio" name="caffeine" value="No"> No</label>
+            <label><input type="radio" name="caffeine" value="Sometimes"> <span data-en="Sometimes" data-es="A veces">Sometimes</span></label>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn" data-en="Submit" data-es="Enviar">Submit</button>
+      <p class="error-msg" id="formError"></p>
+    </form>
+
+    <div class="success-msg" id="successMsg">
+      <h2 data-en="Thank you!" data-es="&iexcl;Gracias!">Thank you!</h2>
+      <p data-en="Your favorites have been saved." data-es="Tus favoritos han sido guardados.">Your favorites have been saved.</p>
+      <br>
+      <button class="submit-btn" onclick="startOver()" data-en="Start Over" data-es="Empezar de Nuevo">Start Over</button>
+    </div>
+
+    <div class="admin-link">
+      <a href="admin.html" data-en="Admin Access" data-es="Acceso Admin">Admin Access</a>
+    </div>
+  </div>
+
+  <script>
+    // ---- SUPABASE CONFIG ----
+    const SUPABASE_URL = 'https://wevwmibokpqejcjjemde.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_01YdxOTJB2_YZgzuhkGwMA_zYBTFg6B';
+
+    let currentLang = 'en';
+    let currentEmployee = null; // { id, first_name, preferred_name }
+    let existingFavorites = null; // existing record if editing
+
+    function setLang(lang) {
+      currentLang = lang;
+      document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelector(`.lang-btn:${lang === 'en' ? 'first-child' : 'last-child'}`).classList.add('active');
+      document.querySelectorAll('[data-en]').forEach(el => {
+        el.textContent = el.getAttribute(`data-${lang}`);
+      });
+    }
+
+    // ---- REST helpers ----
+    function restHeaders(prefer) {
+      const h = {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+      };
+      if (prefer) h['Prefer'] = prefer;
+      return h;
+    }
+
+    async function restGet(endpoint) {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, {
+        headers: restHeaders()
+      });
+      if (!res.ok) throw new Error(await res.text());
+      return res.json();
+    }
+
+    // ---- STEP 1: Employee lookup ----
+    async function lookupEmployee() {
+      const errEl = document.getElementById('lookupError');
+      errEl.style.display = 'none';
+
+      const code = document.getElementById('clockInNumber').value.trim();
+      if (!code) {
+        errEl.textContent = currentLang === 'en'
+          ? 'Please enter your clock-in number.'
+          : 'Por favor ingresa tu número de empleado.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      const btn = document.querySelector('#lookupSection .submit-btn');
+      btn.disabled = true;
+      btn.textContent = currentLang === 'en' ? 'Looking up...' : 'Buscando...';
+
+      try {
+        // Look up employee by code
+        const employees = await restGet(
+          `ident_employees?employee_code=eq.${code}&deleted_at=is.null&is_device=eq.false&select=id,first_name,preferred_name`
+        );
+
+        if (employees.length === 0) {
+          errEl.textContent = currentLang === 'en'
+            ? 'Clock-in number not found. Please try again.'
+            : 'Número de reloj no encontrado. Inténtalo de nuevo.';
+          errEl.style.display = 'block';
+          return;
+        }
+
+        currentEmployee = employees[0];
+        const displayName = currentEmployee.preferred_name || currentEmployee.first_name;
+
+        // Check for existing favorites
+        const favorites = await restGet(
+          `employee_favorites?employee_id=eq.${currentEmployee.id}&select=*`
+        );
+
+        if (favorites.length > 0) {
+          existingFavorites = favorites[0];
+          prefillForm(existingFavorites);
+        } else {
+          existingFavorites = null;
+        }
+
+        // Show greeting and survey
+        document.getElementById('greeting').textContent =
+          (currentLang === 'en' ? 'Hi ' : '¡Hola ') + displayName + '!';
+        document.getElementById('greetingSub').textContent =
+          existingFavorites
+            ? (currentLang === 'en'
+                ? 'Your previous answers are loaded. Update anything you\'d like!'
+                : 'Tus respuestas anteriores están cargadas. ¡Actualiza lo que quieras!')
+            : (currentLang === 'en'
+                ? 'Fill out your favorites below.'
+                : 'Completa tus favoritos abajo.');
+
+        document.getElementById('lookupSection').style.display = 'none';
+        document.getElementById('surveyForm').style.display = 'block';
+
+      } catch (err) {
+        errEl.textContent = currentLang === 'en'
+          ? 'Something went wrong. Please try again.'
+          : 'Algo salió mal. Inténtalo de nuevo.';
+        errEl.style.display = 'block';
+        console.error(err);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = currentLang === 'en' ? 'Continue' : 'Continuar';
+      }
+    }
+
+    function prefillForm(fav) {
+      if (fav.candy) document.getElementById('q1_candy').value = fav.candy;
+      if (fav.snack) document.getElementById('q2_snack').value = fav.snack;
+      if (fav.chips) document.getElementById('q3_chips').value = fav.chips;
+      if (fav.drink) document.getElementById('q4_drink').value = fav.drink;
+      if (fav.cake_flavor) document.getElementById('q5_cake').value = fav.cake_flavor;
+      if (fav.dessert) document.getElementById('q6_dessert').value = fav.dessert;
+      if (fav.fast_food) document.getElementById('q7_fastfood').value = fav.fast_food;
+      if (fav.restaurant) document.getElementById('q8_restaurant').value = fav.restaurant;
+      if (fav.shop) document.getElementById('q9_shop').value = fav.shop;
+      if (fav.color) document.getElementById('q10_color').value = fav.color;
+      if (fav.cfa_item) document.getElementById('q11_cfa').value = fav.cfa_item;
+      if (fav.gift) document.getElementById('q12_gift').value = fav.gift;
+      if (fav.coffee_energy) document.getElementById('q13_coffee').value = fav.coffee_energy;
+      if (fav.pizza) document.getElementById('q14_pizza').value = fav.pizza;
+      if (fav.scent) document.getElementById('q15_scent').value = fav.scent;
+      if (fav.allergies) document.getElementById('q_allergies').value = fav.allergies;
+      if (fav.caffeine) {
+        const radio = document.querySelector(`input[name="caffeine"][value="${fav.caffeine}"]`);
+        if (radio) radio.checked = true;
+      }
+    }
+
+    // ---- STEP 2: Submit survey ----
+    document.getElementById('surveyForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errEl = document.getElementById('formError');
+      errEl.style.display = 'none';
+
+      if (!currentEmployee) return;
+
+      const caffeineRadio = document.querySelector('input[name="caffeine"]:checked');
+
+      const data = {
+        employee_id: currentEmployee.id,
+        candy: document.getElementById('q1_candy').value.trim(),
+        snack: document.getElementById('q2_snack').value.trim(),
+        chips: document.getElementById('q3_chips').value.trim(),
+        drink: document.getElementById('q4_drink').value.trim(),
+        cake_flavor: document.getElementById('q5_cake').value.trim(),
+        dessert: document.getElementById('q6_dessert').value.trim(),
+        fast_food: document.getElementById('q7_fastfood').value.trim(),
+        restaurant: document.getElementById('q8_restaurant').value.trim(),
+        shop: document.getElementById('q9_shop').value.trim(),
+        color: document.getElementById('q10_color').value.trim(),
+        cfa_item: document.getElementById('q11_cfa').value.trim(),
+        gift: document.getElementById('q12_gift').value.trim(),
+        coffee_energy: document.getElementById('q13_coffee').value.trim(),
+        pizza: document.getElementById('q14_pizza').value.trim(),
+        scent: document.getElementById('q15_scent').value.trim(),
+        allergies: document.getElementById('q_allergies').value.trim(),
+        caffeine: caffeineRadio ? caffeineRadio.value : '',
+        updated_at: new Date().toISOString()
+      };
+
+      const btn = document.querySelector('#surveyForm .submit-btn');
+      btn.disabled = true;
+      btn.textContent = currentLang === 'en' ? 'Submitting...' : 'Enviando...';
+
+      try {
+        // Upsert: POST with resolution=merge-duplicates uses the UNIQUE(employee_id) constraint
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/employee_favorites`, {
+          method: 'POST',
+          headers: restHeaders('resolution=merge-duplicates,return=minimal'),
+          body: JSON.stringify(data)
+        });
+
+        if (!res.ok) {
+          const err = await res.text();
+          throw new Error(err);
+        }
+
+        document.getElementById('surveyForm').style.display = 'none';
+        document.getElementById('successMsg').style.display = 'block';
+      } catch (err) {
+        errEl.textContent = currentLang === 'en'
+          ? 'Something went wrong. Please try again.'
+          : 'Algo salió mal. Inténtalo de nuevo.';
+        errEl.style.display = 'block';
+        console.error(err);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = currentLang === 'en' ? 'Submit' : 'Enviar';
+      }
+    });
+
+    function startOver() {
+      currentEmployee = null;
+      existingFavorites = null;
+      document.getElementById('surveyForm').reset();
+      document.getElementById('surveyForm').style.display = 'none';
+      document.getElementById('successMsg').style.display = 'none';
+      document.getElementById('lookupSection').style.display = 'block';
+      document.getElementById('clockInNumber').value = '';
+    }
+  </script>
+</body>
+</html>
