@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>My Favorites Survey</title>
 
   <!-- Open Graph / Link Preview -->
@@ -14,428 +14,658 @@
 
   <!-- iMessage / Apple -->
   <meta name="apple-mobile-web-app-title" content="My Favorites">
+  <meta name="theme-color" content="#e4002b">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red: #e4002b;
+      --red-dark: #c40022;
+      --red-deeper: #9a001a;
+      --bg: #f8f8fa;
+      --card: #ffffff;
+      --text: #1a1a2e;
+      --text-light: #6b7280;
+      --border: #e5e7eb;
+      --radius: 14px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 20px rgba(0,0,0,0.08);
+      --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+    }
+
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f5f5f5;
-      color: #333;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* ---- Branded hero header (lookup screen only) ---- */
-    .hero {
-      background: linear-gradient(135deg, #e4002b 0%, #a30020 100%);
-      color: white;
-      text-align: center;
-      padding: 48px 20px 56px;
-      margin-bottom: -28px;
-      position: relative;
-    }
-    .hero-logo {
-      max-width: 200px;
-      margin: 0 auto 20px;
-    }
-    .hero-logo img {
-      width: 100%;
-      height: auto;
-      border-radius: 12px;
-    }
-    .hero h1 {
-      font-size: 1.75rem;
-      font-weight: 700;
-      margin-bottom: 6px;
-      letter-spacing: -0.02em;
-    }
-    .hero p {
-      font-size: 0.95rem;
-      opacity: 0.9;
-      font-weight: 400;
-    }
-
-    /* ---- Compact header (survey form) ---- */
-    .form-header {
-      text-align: center;
-      padding: 20px 20px 0;
-    }
-    .form-header h1 {
-      font-size: 1.5rem;
-      color: #e4002b;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-
-    .lang-toggle {
+    /* ===== SCREEN 1: LOOKUP ===== */
+    #lookupSection {
+      min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
-      justify-content: center;
-      gap: 8px;
-      margin: 16px 0 20px;
+      flex-direction: column;
+      background: linear-gradient(160deg, #e4002b 0%, #b8001e 40%, #8a0016 100%);
+      position: relative;
+      overflow: hidden;
     }
-    .lang-btn {
-      padding: 6px 18px;
-      border: 2px solid rgba(255,255,255,0.4);
-      background: rgba(255,255,255,0.15);
-      color: white;
-      border-radius: 20px;
-      cursor: pointer;
-      font-size: 0.85rem;
-      font-weight: 600;
-      transition: all 0.2s;
-      font-family: inherit;
+    #lookupSection::before {
+      content: '';
+      position: absolute;
+      top: -30%;
+      right: -20%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+      border-radius: 50%;
     }
-    .lang-btn.active {
-      background: white;
-      color: #e4002b;
-      border-color: white;
-    }
-    /* When lang toggle is inside the form (not hero), different colors */
-    .form-header .lang-toggle .lang-btn {
-      border-color: #e4002b;
-      background: white;
-      color: #e4002b;
-    }
-    .form-header .lang-toggle .lang-btn.active {
-      background: #e4002b;
-      color: white;
+    #lookupSection::after {
+      content: '';
+      position: absolute;
+      bottom: -20%;
+      left: -15%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%);
+      border-radius: 50%;
     }
 
-    .container {
-      max-width: 640px;
-      margin: 0 auto;
-      padding: 0 20px 20px;
-    }
-
-    .card {
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-      padding: 28px;
-      margin-bottom: 16px;
-    }
-
-    /* ---- Lookup card (centered, elevated) ---- */
-    .lookup-card {
+    .lookup-inner {
       position: relative;
       z-index: 1;
-      max-width: 400px;
-      margin: 0 auto 16px;
-      padding: 32px 28px;
-    }
-    .lookup-card .form-group label {
-      text-align: center;
-      font-size: 0.9rem;
-      color: #666;
-      font-weight: 500;
-    }
-    .lookup-card input[type="number"] {
-      text-align: center;
-      font-size: 1.5rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      padding: 14px 16px;
-      font-family: 'Inter', monospace;
-    }
-
-    .form-group {
-      margin-bottom: 22px;
-    }
-    .form-group:last-child {
-      margin-bottom: 0;
-    }
-    .form-group label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 6px;
-      font-size: 0.95rem;
-      color: #222;
-    }
-    .form-group label .q-number {
-      color: #e4002b;
-      margin-right: 4px;
-    }
-    .form-group input[type="text"],
-    .form-group input[type="number"] {
-      width: 100%;
-      padding: 10px 14px;
-      border: 2px solid #e8e8e8;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-family: inherit;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      background: #fafafa;
-    }
-    .form-group input:focus {
-      outline: none;
-      border-color: #e4002b;
-      box-shadow: 0 0 0 3px rgba(228,0,43,0.1);
-      background: white;
-    }
-    .caffeine-group {
+      flex: 1;
       display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-    .caffeine-group label {
-      display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 6px;
-      font-weight: 400;
-      cursor: pointer;
-    }
-    .caffeine-group input[type="radio"] {
-      accent-color: #e4002b;
-      width: 18px;
-      height: 18px;
+      justify-content: center;
+      padding: 40px 24px;
+      padding-top: calc(40px + env(safe-area-inset-top, 0px));
+      padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
     }
 
-    .submit-btn {
+    .brand {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .brand-logo {
+      width: 220px;
+      max-width: 60vw;
+      margin-bottom: 24px;
+      filter: brightness(0) invert(1);
+      opacity: 0.95;
+    }
+    .brand h1 {
+      color: white;
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+    }
+    .brand p {
+      color: rgba(255,255,255,0.8);
+      font-size: 1.05rem;
+      font-weight: 400;
+    }
+
+    .lookup-card {
+      background: white;
+      border-radius: 20px;
+      padding: 32px 28px;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+    .lookup-card label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .lookup-card input {
+      width: 100%;
+      text-align: center;
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      padding: 14px 16px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-family: 'Inter', monospace;
+      background: var(--bg);
+      color: var(--text);
+      transition: all 0.2s;
+      outline: none;
+    }
+    .lookup-card input:focus {
+      border-color: var(--red);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(228,0,43,0.1);
+    }
+    .lookup-card input::placeholder {
+      color: #ccc;
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+    .lookup-card .btn-continue {
       display: block;
       width: 100%;
+      margin-top: 16px;
       padding: 14px;
-      background: #e4002b;
+      background: var(--red);
       color: white;
       border: none;
       border-radius: 12px;
-      font-size: 1.05rem;
-      font-weight: 600;
+      font-size: 1rem;
+      font-weight: 700;
       cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
       font-family: inherit;
+      transition: all 0.2s;
     }
-    .submit-btn:hover { background: #c40025; }
-    .submit-btn:active { transform: scale(0.98); }
-    .submit-btn:disabled {
-      background: #ccc;
-      cursor: not-allowed;
-      transform: none;
-    }
-    .lookup-btn {
-      max-width: 400px;
-      margin: 0 auto;
-      display: block;
-    }
-
-    .success-msg {
+    .lookup-card .btn-continue:hover { background: var(--red-dark); }
+    .lookup-card .btn-continue:active { transform: scale(0.98); }
+    .lookup-card .btn-continue:disabled { background: #bbb; cursor: not-allowed; transform: none; }
+    .error-msg {
+      color: var(--red);
+      font-size: 0.85rem;
+      margin-top: 10px;
       display: none;
       text-align: center;
-      padding: 40px 20px;
+      font-weight: 500;
     }
-    .success-msg .check-circle {
-      width: 64px;
-      height: 64px;
-      background: #e8f5e9;
+
+    .lookup-footer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 32px;
+    }
+    .lang-pill {
+      display: inline-flex;
+      background: rgba(255,255,255,0.12);
+      border-radius: 24px;
+      padding: 4px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .lang-pill button {
+      padding: 7px 18px;
+      border: none;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+      background: transparent;
+      color: rgba(255,255,255,0.7);
+    }
+    .lang-pill button.active {
+      background: white;
+      color: var(--red);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .admin-link {
+      color: rgba(255,255,255,0.35);
+      font-size: 0.75rem;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .admin-link:hover { color: rgba(255,255,255,0.6); }
+
+    /* ===== SCREEN 2: SURVEY FORM ===== */
+    #surveyForm {
+      display: none;
+      padding-bottom: 40px;
+    }
+    .survey-top {
+      background: var(--red);
+      color: white;
+      text-align: center;
+      padding: 28px 24px 36px;
+      padding-top: calc(28px + env(safe-area-inset-top, 0px));
+      position: relative;
+    }
+    .survey-top::after {
+      content: '';
+      position: absolute;
+      bottom: -20px;
+      left: 0;
+      right: 0;
+      height: 40px;
+      background: var(--red);
+      border-radius: 0 0 50% 50% / 0 0 100% 100%;
+    }
+    .survey-top .back-btn {
+      position: absolute;
+      left: 16px;
+      top: 16px;
+      top: calc(16px + env(safe-area-inset-top, 0px));
+      background: rgba(255,255,255,0.15);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      backdrop-filter: blur(8px);
+      transition: background 0.2s;
+    }
+    .survey-top .back-btn:hover { background: rgba(255,255,255,0.25); }
+    .survey-top .greeting-name {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+    .survey-top .greeting-sub {
+      font-size: 0.88rem;
+      opacity: 0.85;
+      font-weight: 400;
+    }
+    .survey-top .lang-pill {
+      margin-top: 14px;
+    }
+
+    .survey-body {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 12px 16px 0;
+      padding-left: calc(16px + env(safe-area-inset-left, 0px));
+      padding-right: calc(16px + env(safe-area-inset-right, 0px));
+    }
+
+    .section {
+      margin-bottom: 20px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      padding: 0 4px;
+    }
+    .section-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .section-header h2 {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-light);
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .field {
+      padding: 14px 18px;
+      border-bottom: 1px solid #f0f0f2;
+    }
+    .field:last-child { border-bottom: none; }
+    .field label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-light);
+      margin-bottom: 6px;
+    }
+    .field label .q-num {
+      color: var(--red);
+      font-weight: 700;
+      margin-right: 3px;
+    }
+    .field input[type="text"] {
+      width: 100%;
+      padding: 10px 0;
+      border: none;
+      font-size: 1rem;
+      font-family: inherit;
+      color: var(--text);
+      background: transparent;
+      outline: none;
+    }
+    .field input[type="text"]::placeholder {
+      color: #d0d0d0;
+    }
+
+    .caffeine-options {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .caffeine-options label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+      color: var(--text);
+      cursor: pointer;
+      padding: 6px 14px;
+      border: 2px solid var(--border);
+      border-radius: 24px;
+      font-size: 0.88rem;
+      transition: all 0.2s;
+    }
+    .caffeine-options label:has(input:checked) {
+      border-color: var(--red);
+      background: rgba(228,0,43,0.06);
+      color: var(--red);
+    }
+    .caffeine-options input[type="radio"] {
+      display: none;
+    }
+
+    .submit-area {
+      padding: 20px 0;
+    }
+    .btn-submit {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      background: var(--red);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+      box-shadow: 0 4px 16px rgba(228,0,43,0.3);
+    }
+    .btn-submit:hover { background: var(--red-dark); box-shadow: 0 6px 24px rgba(228,0,43,0.35); }
+    .btn-submit:active { transform: scale(0.98); }
+    .btn-submit:disabled { background: #bbb; box-shadow: none; cursor: not-allowed; transform: none; }
+    .form-error {
+      color: var(--red);
+      font-size: 0.85rem;
+      margin-top: 10px;
+      display: none;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    /* ===== SCREEN 3: SUCCESS ===== */
+    #successMsg {
+      display: none;
+      min-height: 100vh;
+      min-height: 100dvh;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+      text-align: center;
+      background: var(--bg);
+    }
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 16px;
-    }
-    .success-msg .check-circle svg {
-      width: 32px;
-      height: 32px;
-      color: #2e7d32;
-    }
-    .success-msg h2 { color: #2e7d32; margin-bottom: 8px; font-size: 1.4rem; }
-    .success-msg p { color: #666; font-size: 0.95rem; }
-
-    .admin-link {
-      text-align: center;
-      margin-top: 30px;
-      padding-bottom: 20px;
-    }
-    .admin-link a {
-      color: #bbb;
-      font-size: 0.75rem;
-      text-decoration: none;
-    }
-    .admin-link a:hover { color: #888; }
-    .error-msg {
-      color: #e4002b;
-      font-size: 0.85rem;
-      margin-top: 8px;
-      display: none;
-      text-align: center;
-    }
-    .greeting {
-      text-align: center;
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: #e4002b;
-      margin-bottom: 4px;
-      letter-spacing: -0.01em;
-    }
-    .greeting-sub {
-      text-align: center;
-      font-size: 0.9rem;
-      color: #888;
       margin-bottom: 24px;
+      box-shadow: 0 8px 32px rgba(34,197,94,0.3);
     }
+    .success-icon svg {
+      width: 40px;
+      height: 40px;
+      color: white;
+    }
+    #successMsg h2 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+    #successMsg .success-sub {
+      color: var(--text-light);
+      font-size: 1rem;
+      margin-bottom: 40px;
+      max-width: 300px;
+    }
+    .btn-start-over {
+      padding: 14px 48px;
+      background: white;
+      color: var(--text);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .btn-start-over:hover { border-color: #ccc; background: #fafafa; }
+    .btn-start-over:active { transform: scale(0.98); }
 
-    /* Safe area for notched phones */
-    @supports (padding: env(safe-area-inset-top)) {
-      .hero { padding-top: calc(48px + env(safe-area-inset-top)); }
-      .container { padding-left: calc(20px + env(safe-area-inset-left)); padding-right: calc(20px + env(safe-area-inset-right)); }
-      .admin-link { padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
+    /* ===== UTILITIES ===== */
+    .fade-in {
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
     /* Hide number input spinner */
     input[type="number"]::-webkit-outer-spin-button,
-    input[type="number"]::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
+    input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     input[type="number"] { -moz-appearance: textfield; }
   </style>
 </head>
 <body>
 
-  <!-- ============ LOOKUP SCREEN ============ -->
+  <!-- ============ SCREEN 1: LOOKUP ============ -->
   <div id="lookupSection">
-    <div class="hero">
-      <div class="hero-logo">
-        <img src="logo.jpg" alt="Chick-fil-A Wall Street">
+    <div class="lookup-inner">
+      <div class="brand">
+        <img class="brand-logo" src="logo.jpg" alt="Chick-fil-A Wall Street">
+        <h1 data-en="My Favorites" data-es="Mis Favoritos">My Favorites</h1>
+        <p data-en="Tell us what you love" data-es="Cu&eacute;ntanos lo que te gusta">Tell us what you love</p>
       </div>
-      <h1 data-en="My Favorites" data-es="Mis Favoritos">My Favorites</h1>
-      <p data-en="Tell us what you love" data-es="Cu&eacute;ntanos lo que te gusta">Tell us what you love</p>
-      <div class="lang-toggle">
-        <button class="lang-btn active" onclick="setLang('en')">English</button>
-        <button class="lang-btn" onclick="setLang('es')">Espa&ntilde;ol</button>
-      </div>
-    </div>
 
-    <div class="container">
-      <div class="card lookup-card">
-        <div class="form-group">
-          <label data-en="Enter your clock-in number" data-es="Ingresa tu n&uacute;mero de empleado">Enter your clock-in number</label>
-          <input type="number" id="clockInNumber" inputmode="numeric" pattern="[0-9]*" placeholder="" onkeydown="if(event.key==='Enter') lookupEmployee()">
-        </div>
+      <div class="lookup-card">
+        <label data-en="Clock-in number" data-es="N&uacute;mero de empleado">Clock-in number</label>
+        <input type="number" id="clockInNumber" inputmode="numeric" pattern="[0-9]*"
+               onkeydown="if(event.key==='Enter') lookupEmployee()">
+        <button class="btn-continue" id="continueBtn" onclick="lookupEmployee()"
+                data-en="Continue" data-es="Continuar">Continue</button>
         <p class="error-msg" id="lookupError"></p>
       </div>
-      <button class="submit-btn lookup-btn" onclick="lookupEmployee()" data-en="Continue" data-es="Continuar">Continue</button>
 
-      <div class="admin-link">
-        <a href="admin.html" data-en="Admin Access" data-es="Acceso Admin">Admin Access</a>
+      <div class="lookup-footer">
+        <div class="lang-pill" data-lang-toggle>
+          <button class="active" onclick="setLang('en')">English</button>
+          <button onclick="setLang('es')">Espa&ntilde;ol</button>
+        </div>
+        <a href="admin.html" class="admin-link" data-en="Admin" data-es="Admin">Admin</a>
       </div>
     </div>
   </div>
 
-  <!-- ============ SURVEY FORM ============ -->
-  <form id="surveyForm" style="display:none;">
-    <div class="form-header">
-      <h1 data-en="My Favorites" data-es="Mis Favoritos">My Favorites</h1>
-      <div class="lang-toggle">
-        <button class="lang-btn active" onclick="setLang('en')">English</button>
-        <button class="lang-btn" onclick="setLang('es')">Espa&ntilde;ol</button>
+  <!-- ============ SCREEN 2: SURVEY FORM ============ -->
+  <form id="surveyForm">
+    <div class="survey-top">
+      <button type="button" class="back-btn" onclick="startOver()" data-en="&larr; Back" data-es="&larr; Volver">&larr; Back</button>
+      <div class="greeting-name" id="greeting"></div>
+      <div class="greeting-sub" id="greetingSub"></div>
+      <div class="lang-pill" data-lang-toggle>
+        <button type="button" class="active" onclick="setLang('en')">English</button>
+        <button type="button" onclick="setLang('es')">Espa&ntilde;ol</button>
       </div>
     </div>
 
-    <div class="container">
-      <p class="greeting" id="greeting"></p>
-      <p class="greeting-sub" id="greetingSub"></p>
+    <div class="survey-body fade-in">
 
-      <div class="card">
-        <div class="form-group">
-          <label><span class="q-number">1.</span> <span data-en="Favorite candy" data-es="Dulce favorito">Favorite candy</span></label>
-          <input type="text" id="q1_candy">
+      <!-- Section: Snacks & Sweets -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon" style="background:#fef3c7;">&#127852;</div>
+          <h2 data-en="Snacks & Sweets" data-es="Botanas y Dulces">Snacks & Sweets</h2>
         </div>
-        <div class="form-group">
-          <label><span class="q-number">2.</span> <span data-en="Favorite snack" data-es="Botana favorita">Favorite snack</span></label>
-          <input type="text" id="q2_snack">
-        </div>
-        <div class="form-group">
-          <label><span class="q-number">3.</span> <span data-en="Favorite chips" data-es="Papitas preferidas">Favorite chips</span></label>
-          <input type="text" id="q3_chips">
-        </div>
-        <div class="form-group">
-          <label><span class="q-number">4.</span> <span data-en="Favorite drink" data-es="Bebida favorita">Favorite drink</span></label>
-          <input type="text" id="q4_drink">
-        </div>
-        <div class="form-group">
-          <label><span class="q-number">5.</span> <span data-en="Favorite birthday cake flavor" data-es="Sabor de pastel favorito de cumplea&ntilde;os">Favorite birthday cake flavor</span></label>
-          <input type="text" id="q5_cake">
-        </div>
-        <div class="form-group">
-          <label><span class="q-number">6.</span> <span data-en="Favorite dessert" data-es="Postre favorito">Favorite dessert</span></label>
-          <input type="text" id="q6_dessert">
-        </div>
-        <div class="form-group">
-          <label><span class="q-number">7.</span> <span data-en="Favorite fast-food restaurant (not Chick-fil-A)" data-es="Restaurante de comida r&aacute;pida favorito (que no sea Chick-fil-A)">Favorite fast-food restaurant (not Chick-fil-A)</span></label>
-          <input type="text" id="q7_fastfood">
-        </div>
-        <div class="form-group">
-          <label><span class="q-number">8.</span> <span data-en="Favorite restaurant" data-es="Restaurante favorito">Favorite restaurant</span></label>
-          <input type="text" id="q8_restaurant">
-        </div>
-        <div class="form-group">
-          <label><span class="q-number">9.</span> <span data-en="Favorite place to shop" data-es="Lugar favorito para ir de compras">Favorite place to shop</span></label>
-          <input type="text" id="q9_shop">
-        </div>
-        <div class="form-group">
-          <label><span class="q-number">10.</span> <span data-en="Favorite color" data-es="Color favorito">Favorite color</span></label>
-          <input type="text" id="q10_color">
-        </div>
-        <div class="form-group">
-          <label><span class="q-number">11.</span> <span data-en="Favorite Chick-fil-A menu item" data-es="Platillo favorito de Chick-fil-A">Favorite Chick-fil-A menu item</span></label>
-          <input type="text" id="q11_cfa">
-        </div>
-        <div class="form-group">
-          <label><span class="q-number">12.</span> <span data-en="A gift you would like to receive" data-es="Regalo que te gustar&iacute;a recibir">A gift you would like to receive</span></label>
-          <input type="text" id="q12_gift">
-        </div>
-        <div class="form-group">
-          <label><span class="q-number">13.</span> <span data-en="Favorite coffee or energy drink" data-es="Caf&eacute; o bebida energ&eacute;tica favorita">Favorite coffee or energy drink</span></label>
-          <input type="text" id="q13_coffee">
-        </div>
-        <div class="form-group">
-          <label><span class="q-number">14.</span> <span data-en="Favorite type of pizza" data-es="Tipo de pizza favorito">Favorite type of pizza</span></label>
-          <input type="text" id="q14_pizza">
-        </div>
-        <div class="form-group">
-          <label><span class="q-number">15.</span> <span data-en="Favorite scent" data-es="Olor favorito">Favorite scent</span></label>
-          <input type="text" id="q15_scent">
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="form-group">
-          <label data-en="Do you have any food allergies?" data-es="&iquest;Tienes alergia a alg&uacute;n alimento?">Do you have any food allergies?</label>
-          <input type="text" id="q_allergies">
-        </div>
-        <div class="form-group">
-          <label data-en="Caffeine preference" data-es="&iquest;Tomas cafe&iacute;na?">Caffeine preference</label>
-          <div class="caffeine-group">
-            <label><input type="radio" name="caffeine" value="Yes"> <span data-en="Yes" data-es="S&iacute;">Yes</span></label>
-            <label><input type="radio" name="caffeine" value="No"> No</label>
-            <label><input type="radio" name="caffeine" value="Sometimes"> <span data-en="Sometimes" data-es="A veces">Sometimes</span></label>
+        <div class="card">
+          <div class="field">
+            <label><span class="q-num">1.</span> <span data-en="Favorite candy" data-es="Dulce favorito">Favorite candy</span></label>
+            <input type="text" id="q1_candy">
+          </div>
+          <div class="field">
+            <label><span class="q-num">2.</span> <span data-en="Favorite snack" data-es="Botana favorita">Favorite snack</span></label>
+            <input type="text" id="q2_snack">
+          </div>
+          <div class="field">
+            <label><span class="q-num">3.</span> <span data-en="Favorite chips" data-es="Papitas preferidas">Favorite chips</span></label>
+            <input type="text" id="q3_chips">
+          </div>
+          <div class="field">
+            <label><span class="q-num">4.</span> <span data-en="Favorite birthday cake flavor" data-es="Sabor de pastel favorito de cumplea&ntilde;os">Favorite birthday cake flavor</span></label>
+            <input type="text" id="q5_cake">
+          </div>
+          <div class="field">
+            <label><span class="q-num">5.</span> <span data-en="Favorite dessert" data-es="Postre favorito">Favorite dessert</span></label>
+            <input type="text" id="q6_dessert">
           </div>
         </div>
       </div>
 
-      <button type="submit" class="submit-btn" data-en="Submit" data-es="Enviar">Submit</button>
-      <p class="error-msg" id="formError"></p>
+      <!-- Section: Drinks -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon" style="background:#dbeafe;">&#129380;</div>
+          <h2 data-en="Drinks" data-es="Bebidas">Drinks</h2>
+        </div>
+        <div class="card">
+          <div class="field">
+            <label><span class="q-num">6.</span> <span data-en="Favorite drink" data-es="Bebida favorita">Favorite drink</span></label>
+            <input type="text" id="q4_drink">
+          </div>
+          <div class="field">
+            <label><span class="q-num">7.</span> <span data-en="Favorite coffee or energy drink" data-es="Caf&eacute; o bebida energ&eacute;tica favorita">Favorite coffee or energy drink</span></label>
+            <input type="text" id="q13_coffee">
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: Dining Out -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon" style="background:#fce7f3;">&#127860;</div>
+          <h2 data-en="Dining Out" data-es="Salir a Comer">Dining Out</h2>
+        </div>
+        <div class="card">
+          <div class="field">
+            <label><span class="q-num">8.</span> <span data-en="Favorite fast-food restaurant (not CFA)" data-es="Restaurante de comida r&aacute;pida favorito (que no sea CFA)">Favorite fast-food restaurant (not CFA)</span></label>
+            <input type="text" id="q7_fastfood">
+          </div>
+          <div class="field">
+            <label><span class="q-num">9.</span> <span data-en="Favorite restaurant" data-es="Restaurante favorito">Favorite restaurant</span></label>
+            <input type="text" id="q8_restaurant">
+          </div>
+          <div class="field">
+            <label><span class="q-num">10.</span> <span data-en="Favorite Chick-fil-A menu item" data-es="Platillo favorito de Chick-fil-A">Favorite Chick-fil-A menu item</span></label>
+            <input type="text" id="q11_cfa">
+          </div>
+          <div class="field">
+            <label><span class="q-num">11.</span> <span data-en="Favorite type of pizza" data-es="Tipo de pizza favorito">Favorite type of pizza</span></label>
+            <input type="text" id="q14_pizza">
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: Lifestyle -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon" style="background:#ede9fe;">&#127912;</div>
+          <h2 data-en="Lifestyle" data-es="Estilo de Vida">Lifestyle</h2>
+        </div>
+        <div class="card">
+          <div class="field">
+            <label><span class="q-num">12.</span> <span data-en="Favorite place to shop" data-es="Lugar favorito para ir de compras">Favorite place to shop</span></label>
+            <input type="text" id="q9_shop">
+          </div>
+          <div class="field">
+            <label><span class="q-num">13.</span> <span data-en="Favorite color" data-es="Color favorito">Favorite color</span></label>
+            <input type="text" id="q10_color">
+          </div>
+          <div class="field">
+            <label><span class="q-num">14.</span> <span data-en="A gift you would like to receive" data-es="Regalo que te gustar&iacute;a recibir">A gift you would like to receive</span></label>
+            <input type="text" id="q12_gift">
+          </div>
+          <div class="field">
+            <label><span class="q-num">15.</span> <span data-en="Favorite scent" data-es="Olor favorito">Favorite scent</span></label>
+            <input type="text" id="q15_scent">
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: Health -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon" style="background:#dcfce7;">&#128154;</div>
+          <h2 data-en="Health" data-es="Salud">Health</h2>
+        </div>
+        <div class="card">
+          <div class="field">
+            <label data-en="Do you have any food allergies?" data-es="&iquest;Tienes alergia a alg&uacute;n alimento?">Do you have any food allergies?</label>
+            <input type="text" id="q_allergies">
+          </div>
+          <div class="field">
+            <label data-en="Do you drink caffeine?" data-es="&iquest;Tomas cafe&iacute;na?">Do you drink caffeine?</label>
+            <div class="caffeine-options">
+              <label><input type="radio" name="caffeine" value="Yes"> <span data-en="Yes" data-es="S&iacute;">Yes</span></label>
+              <label><input type="radio" name="caffeine" value="No"> No</label>
+              <label><input type="radio" name="caffeine" value="Sometimes"> <span data-en="Sometimes" data-es="A veces">Sometimes</span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="submit-area">
+        <button type="submit" class="btn-submit" data-en="Submit" data-es="Enviar">Submit</button>
+        <p class="form-error" id="formError"></p>
+      </div>
     </div>
   </form>
 
-  <!-- ============ SUCCESS ============ -->
-  <div class="success-msg" id="successMsg">
-    <div class="check-circle">
+  <!-- ============ SCREEN 3: SUCCESS ============ -->
+  <div id="successMsg">
+    <div class="success-icon">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="20 6 9 17 4 12"></polyline>
       </svg>
     </div>
     <h2 data-en="Thank you!" data-es="&iexcl;Gracias!">Thank you!</h2>
-    <p data-en="Your favorites have been saved." data-es="Tus favoritos han sido guardados.">Your favorites have been saved.</p>
-    <br>
-    <div class="container">
-      <button class="submit-btn" onclick="startOver()" data-en="Start Over" data-es="Empezar de Nuevo">Start Over</button>
-    </div>
+    <p class="success-sub" data-en="Your favorites have been saved. We appreciate you!" data-es="Tus favoritos han sido guardados. &iexcl;Te lo agradecemos!">Your favorites have been saved. We appreciate you!</p>
+    <button class="btn-start-over" onclick="startOver()" data-en="Start Over" data-es="Empezar de Nuevo">Start Over</button>
   </div>
 
   <script>
-    // ---- SUPABASE CONFIG ----
     const SUPABASE_URL = 'https://wevwmibokpqejcjjemde.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_01YdxOTJB2_YZgzuhkGwMA_zYBTFg6B';
 
@@ -445,19 +675,16 @@
 
     function setLang(lang) {
       currentLang = lang;
-      document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-      // Activate the correct button in ALL lang toggles
-      document.querySelectorAll('.lang-toggle').forEach(toggle => {
-        const btns = toggle.querySelectorAll('.lang-btn');
+      document.querySelectorAll('[data-lang-toggle]').forEach(toggle => {
+        const btns = toggle.querySelectorAll('button');
         btns.forEach(b => b.classList.remove('active'));
         btns[lang === 'en' ? 0 : 1].classList.add('active');
       });
       document.querySelectorAll('[data-en]').forEach(el => {
-        el.textContent = el.getAttribute(`data-${lang}`);
+        el.innerHTML = el.getAttribute(`data-${lang}`);
       });
     }
 
-    // ---- REST helpers ----
     function restHeaders(prefer) {
       const h = {
         'Content-Type': 'application/json',
@@ -469,14 +696,11 @@
     }
 
     async function restGet(endpoint) {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, {
-        headers: restHeaders()
-      });
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, { headers: restHeaders() });
       if (!res.ok) throw new Error(await res.text());
       return res.json();
     }
 
-    // ---- STEP 1: Employee lookup ----
     async function lookupEmployee() {
       const errEl = document.getElementById('lookupError');
       errEl.style.display = 'none';
@@ -490,7 +714,7 @@
         return;
       }
 
-      const btn = document.querySelector('.lookup-btn');
+      const btn = document.getElementById('continueBtn');
       btn.disabled = true;
       btn.textContent = currentLang === 'en' ? 'Looking up...' : 'Buscando...';
 
@@ -514,26 +738,23 @@
           `employee_favorites?employee_id=eq.${currentEmployee.id}&select=*`
         );
 
-        if (favorites.length > 0) {
-          existingFavorites = favorites[0];
-          prefillForm(existingFavorites);
-        } else {
-          existingFavorites = null;
-        }
+        existingFavorites = favorites.length > 0 ? favorites[0] : null;
+        if (existingFavorites) prefillForm(existingFavorites);
 
         document.getElementById('greeting').textContent =
           (currentLang === 'en' ? 'Hi ' : '¡Hola ') + displayName + '!';
         document.getElementById('greetingSub').textContent =
           existingFavorites
             ? (currentLang === 'en'
-                ? 'Your previous answers are loaded. Update anything you\'d like!'
-                : 'Tus respuestas anteriores están cargadas. ¡Actualiza lo que quieras!')
+                ? 'Your answers are loaded — update anything!'
+                : 'Tus respuestas están cargadas — ¡actualiza lo que quieras!')
             : (currentLang === 'en'
-                ? 'Fill out your favorites below.'
-                : 'Completa tus favoritos abajo.');
+                ? 'Fill out your favorites below'
+                : 'Completa tus favoritos abajo');
 
         document.getElementById('lookupSection').style.display = 'none';
         document.getElementById('surveyForm').style.display = 'block';
+        window.scrollTo(0, 0);
 
       } catch (err) {
         errEl.textContent = currentLang === 'en'
@@ -570,7 +791,6 @@
       }
     }
 
-    // ---- STEP 2: Submit survey ----
     document.getElementById('surveyForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const errEl = document.getElementById('formError');
@@ -602,7 +822,7 @@
         updated_at: new Date().toISOString()
       };
 
-      const btn = document.querySelector('#surveyForm .submit-btn');
+      const btn = document.querySelector('.btn-submit');
       btn.disabled = true;
       btn.textContent = currentLang === 'en' ? 'Submitting...' : 'Enviando...';
 
@@ -619,7 +839,8 @@
         }
 
         document.getElementById('surveyForm').style.display = 'none';
-        document.getElementById('successMsg').style.display = 'block';
+        document.getElementById('successMsg').style.display = 'flex';
+
       } catch (err) {
         errEl.textContent = currentLang === 'en'
           ? 'Something went wrong. Please try again.'
@@ -638,8 +859,9 @@
       document.getElementById('surveyForm').reset();
       document.getElementById('surveyForm').style.display = 'none';
       document.getElementById('successMsg').style.display = 'none';
-      document.getElementById('lookupSection').style.display = 'block';
+      document.getElementById('lookupSection').style.display = 'flex';
       document.getElementById('clockInNumber').value = '';
+      window.scrollTo(0, 0);
     }
   </script>
 </body>
